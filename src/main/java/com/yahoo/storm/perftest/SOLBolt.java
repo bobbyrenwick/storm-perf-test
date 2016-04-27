@@ -28,9 +28,10 @@ import org.apache.storm.tuple.Values;
 
 public class SOLBolt extends BaseRichBolt {
   private OutputCollector _collector;
+  private int delay;
 
-  public SOLBolt() {
-    //Empty
+  public SOLBolt(int averageDelay) {
+    delay = averageDelay;
   }
 
   @Override
@@ -38,8 +39,19 @@ public class SOLBolt extends BaseRichBolt {
     _collector = collector;
   }
 
+  public static void busySleep(long millis) {
+    long elapsed;
+
+    final long startTime = System.currentTimeMillis();
+
+    do {
+      elapsed = System.currentTimeMillis() - startTime;
+    } while (elapsed < millis);
+  }
+
   @Override
   public void execute(Tuple tuple) {
+    busySleep(delay);
     _collector.emit(tuple, new Values(tuple.getString(0)));
     _collector.ack(tuple);
   }

@@ -251,13 +251,17 @@ public class Main {
         LOG.info("Adding in "+_spoutParallel+" spouts");
         builder.setSpout("messageSpout",
             new SOLSpout(_messageSize, _ackEnabled), _spoutParallel);
+
         LOG.info("Adding in "+_boltParallel+" bolts");
-        builder.setBolt("messageBolt1", new SOLBolt(), _boltParallel)
-            .shuffleGrouping("messageSpout");
+        builder.setBolt("messageBolt1", new SOLBolt(10), _boltParallel)
+            .localOrShuffleGrouping("messageSpout");
+
         for (int levelNum = 2; levelNum <= _numLevels; levelNum++) {
           LOG.info("Adding in "+_boltParallel+" bolts at level "+levelNum);
-          builder.setBolt("messageBolt"+levelNum, new SOLBolt(), _boltParallel)
-              .shuffleGrouping("messageBolt"+(levelNum - 1));
+
+          builder.setBolt("messageBolt"+levelNum, new SOLBolt(40), _boltParallel)
+              .localOrShuffleGrouping("messageBolt"+(levelNum - 1));
+
         }
 
         Config conf = new Config();
