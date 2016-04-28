@@ -259,7 +259,7 @@ public class Main {
         for (int levelNum = 2; levelNum <= _numLevels; levelNum++) {
           LOG.info("Adding in "+_boltParallel+" bolts at level "+levelNum);
 
-          builder.setBolt("messageBolt"+levelNum, new SOLBolt(40), _boltParallel)
+          builder.setBolt("messageBolt"+levelNum, new SOLBolt(100), _boltParallel)
               .localOrShuffleGrouping("messageBolt"+(levelNum - 1));
 
         }
